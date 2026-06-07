@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../data/models/manga_model.dart';
 import '../../data/repositories/manga_repository.dart';
 import '../../services/cover_service.dart';
+import '../../services/sync_service.dart';
 
 class HomeController extends GetxController {
   final _repo = Get.find<MangaRepository>();
@@ -63,6 +64,9 @@ class HomeController extends GetxController {
   }
 
   Future<void> refreshMangas() async {
+    if (Get.isRegistered<SyncService>()) {
+      await Get.find<SyncService>().syncPendingActions();
+    }
     await fetchMangas(forceRefresh: true);
   }
 
