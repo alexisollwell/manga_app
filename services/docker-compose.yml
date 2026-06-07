@@ -1,0 +1,15 @@
+services:
+  manga-api:
+    build: .
+    container_name: manga-library-api
+    ports:
+      - "8050:8000"
+    volumes:
+      - manga_data:/app/data
+    environment:
+      - DATABASE_DIR=/app/data
+    restart: unless-stopped
+
+volumes:
+  manga_data:
+    driver: local
