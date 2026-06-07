@@ -22,7 +22,8 @@ class MangaDetailView extends GetView<MangaDetailController> {
           const ConnectivityBanner(),
           Expanded(
             child: Obx(() {
-              if (controller.isLoading.value && controller.manga.value == null) {
+              if (controller.isLoading.value &&
+                  controller.manga.value == null) {
                 return const LoadingWidget(message: 'Cargando manga...');
               }
 
@@ -55,12 +56,16 @@ class MangaDetailView extends GetView<MangaDetailController> {
                               Expanded(
                                 child: Text(
                                   manga.titulo,
-                                  style: Theme.of(context).textTheme.displayMedium,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.displayMedium,
                                 ),
                               ),
                               PopupMenuButton<String>(
-                                icon: const Icon(Icons.more_vert_rounded,
-                                    color: AppColors.textSecondary),
+                                icon: const Icon(
+                                  Icons.more_vert_rounded,
+                                  color: AppColors.textSecondary,
+                                ),
                                 onSelected: (value) {
                                   if (value == 'edit') {
                                     controller.goToEdit();
@@ -83,11 +88,18 @@ class MangaDetailView extends GetView<MangaDetailController> {
                                     value: 'delete',
                                     child: Row(
                                       children: [
-                                        Icon(Icons.delete_rounded,
-                                            size: 20, color: AppColors.danger),
+                                        Icon(
+                                          Icons.delete_rounded,
+                                          size: 20,
+                                          color: AppColors.danger,
+                                        ),
                                         SizedBox(width: 8),
-                                        Text('Eliminar manga',
-                                            style: TextStyle(color: AppColors.danger)),
+                                        Text(
+                                          'Eliminar manga',
+                                          style: TextStyle(
+                                            color: AppColors.danger,
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -99,8 +111,11 @@ class MangaDetailView extends GetView<MangaDetailController> {
                           const SizedBox(height: 8),
 
                           // ── Progress Summary ─────────
-                          _buildProgressSummary(context, manga.tomosAdquiridos.length,
-                              manga.cantidadTomos),
+                          _buildProgressSummary(
+                            context,
+                            manga.tomosAdquiridos.length,
+                            manga.cantidadTomos,
+                          ),
 
                           const SizedBox(height: 24),
 
@@ -116,8 +131,10 @@ class MangaDetailView extends GetView<MangaDetailController> {
                           const SizedBox(height: 16),
 
                           // ── Tomo Grid ────────────────
-                          _buildTomoGrid(manga.cantidadTomos,
-                              manga.tomosAdquiridos),
+                          _buildTomoGrid(
+                            manga.cantidadTomos,
+                            manga.tomosAdquiridos,
+                          ),
                         ],
                       ),
                     ),
@@ -177,73 +194,80 @@ class MangaDetailView extends GetView<MangaDetailController> {
     final isComplete = acquired >= total;
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isComplete
-              ? AppColors.success.withAlpha(80)
-              : AppColors.surfaceLight,
-        ),
-      ),
-      child: Row(
-        children: [
-          // Circular progress
-          SizedBox(
-            width: 56,
-            height: 56,
-            child: Stack(
-              children: [
-                CircularProgressIndicator(
-                  value: progress,
-                  strokeWidth: 5,
-                  backgroundColor: AppColors.pending.withAlpha(80),
-                  valueColor: AlwaysStoppedAnimation(
-                    isComplete ? AppColors.success : AppColors.primary,
-                  ),
-                ),
-                Center(
-                  child: Text(
-                    '${(progress * 100).toInt()}%',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceLight,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isComplete
+                  ? AppColors.success.withAlpha(80)
+                  : AppColors.surfaceLight,
+            ),
+          ),
+          child: Row(
+            children: [
+              // Circular progress
+              SizedBox(
+                width: 60,
+                height: 60,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator(
+                        value: progress,
+                        strokeWidth: 5.5,
+                        backgroundColor: AppColors.pending.withAlpha(80),
+                        valueColor: AlwaysStoppedAnimation(
+                          isComplete ? AppColors.success : AppColors.primary,
+                        ),
+                      ),
                     ),
-                  ),
+                    Text(
+                      '${(progress * 100).toInt()}%',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isComplete ? '¡Colección completa!' : 'Progreso',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: isComplete
+                            ? AppColors.success
+                            : AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$acquired de $total tomos adquiridos',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isComplete ? '¡Colección completa! 🎉' : 'Progreso',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color:
-                        isComplete ? AppColors.success : AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '$acquired de $total tomos adquiridos',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.05, end: 0, duration: 400.ms);
+        )
+        .animate()
+        .fadeIn(duration: 400.ms)
+        .slideX(begin: -0.05, end: 0, duration: 400.ms);
   }
 
   Widget _legendDot(Color color, String label) {
@@ -261,10 +285,7 @@ class MangaDetailView extends GetView<MangaDetailController> {
         const SizedBox(width: 6),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 13,
-            color: AppColors.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
         ),
       ],
     );

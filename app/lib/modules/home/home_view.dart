@@ -35,12 +35,16 @@ class HomeView extends GetView<HomeController> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.toNamed(AppRoutes.mangaForm),
-        child: const Icon(Icons.add_rounded, size: 28),
-      )
-          .animate()
-          .scale(
+      floatingActionButton:
+          FloatingActionButton(
+            onPressed: () async {
+              final result = await Get.toNamed(AppRoutes.mangaForm);
+              if (result is MangaModel) {
+                controller.updateMangaInList(result);
+              }
+            },
+            child: const Icon(Icons.add_rounded, size: 28),
+          ).animate().scale(
             begin: const Offset(0, 0),
             end: const Offset(1, 1),
             delay: 300.ms,
@@ -61,16 +65,18 @@ class HomeView extends GetView<HomeController> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Obx(() => Text(
-                  'Hola, ${userService.alias.value} 👋',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w400,
-                  ),
-                )),
+            Obx(
+              () => Text(
+                'Hola, ${userService.alias.value}',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
             const Text(
-              'MangaLib',
+              'Mangas',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
@@ -98,16 +104,24 @@ class HomeView extends GetView<HomeController> {
           onChanged: controller.updateSearch,
           decoration: InputDecoration(
             hintText: 'Buscar manga...',
-            prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textHint),
-            suffixIcon: Obx(() => controller.searchQuery.value.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.close_rounded, color: AppColors.textHint),
-                    onPressed: () {
-                      controller.updateSearch('');
-                      FocusScope.of(Get.context!).unfocus();
-                    },
-                  )
-                : const SizedBox.shrink()),
+            prefixIcon: const Icon(
+              Icons.search_rounded,
+              color: AppColors.textHint,
+            ),
+            suffixIcon: Obx(
+              () => controller.searchQuery.value.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: AppColors.textHint,
+                      ),
+                      onPressed: () {
+                        controller.updateSearch('');
+                        FocusScope.of(Get.context!).unfocus();
+                      },
+                    )
+                  : const SizedBox.shrink(),
+            ),
             filled: true,
             fillColor: AppColors.surfaceLight,
             border: OutlineInputBorder(
@@ -124,36 +138,40 @@ class HomeView extends GetView<HomeController> {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-        child: Obx(() => Row(
-              children: [
-                FilterChip(
-                  label: const Text('Solo pendientes'),
-                  selected: controller.showOnlyPending.value,
-                  onSelected: (_) => controller.togglePendingFilter(),
-                  selectedColor: AppColors.primary.withAlpha(60),
-                  checkmarkColor: AppColors.primary,
-                  labelStyle: TextStyle(
-                    color: controller.showOnlyPending.value
-                        ? AppColors.primary
-                        : AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  side: BorderSide(
-                    color: controller.showOnlyPending.value
-                        ? AppColors.primary
-                        : AppColors.surfaceLight,
+        child: Obx(
+          () => Row(
+            children: [
+              FilterChip(
+                label: const Text('Solo pendientes'),
+                selected: controller.showOnlyPending.value,
+                onSelected: (_) => controller.togglePendingFilter(),
+                selectedColor: AppColors.primary.withAlpha(60),
+                checkmarkColor: AppColors.primary,
+                labelStyle: TextStyle(
+                  color: controller.showOnlyPending.value
+                      ? AppColors.primary
+                      : AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+                side: BorderSide(
+                  color: controller.showOnlyPending.value
+                      ? AppColors.primary
+                      : AppColors.surfaceLight,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Obx(
+                () => Text(
+                  '${controller.filteredMangas.length} mangas',
+                  style: const TextStyle(
+                    color: AppColors.textHint,
+                    fontSize: 13,
                   ),
                 ),
-                const SizedBox(width: 8),
-                Obx(() => Text(
-                      '${controller.filteredMangas.length} mangas',
-                      style: const TextStyle(
-                        color: AppColors.textHint,
-                        fontSize: 13,
-                      ),
-                    )),
-              ],
-            )),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -166,7 +184,8 @@ class HomeView extends GetView<HomeController> {
         );
       }
 
-      if (controller.errorMessage.value.isNotEmpty && controller.mangas.isEmpty) {
+      if (controller.errorMessage.value.isNotEmpty &&
+          controller.mangas.isEmpty) {
         return SliverFillRemaining(
           child: AppErrorWidget(
             message: controller.errorMessage.value,
@@ -216,24 +235,21 @@ class HomeView extends GetView<HomeController> {
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
           ),
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              final manga = filtered[index];
-              return _MangaCard(manga: manga)
-                  .animate()
-                  .fadeIn(
-                    delay: Duration(milliseconds: 50 * index),
-                    duration: 400.ms,
-                  )
-                  .slideY(
-                    begin: 0.1,
-                    end: 0,
-                    delay: Duration(milliseconds: 50 * index),
-                    duration: 400.ms,
-                  );
-            },
-            childCount: filtered.length,
-          ),
+          delegate: SliverChildBuilderDelegate((context, index) {
+            final manga = filtered[index];
+            return _MangaCard(manga: manga)
+                .animate()
+                .fadeIn(
+                  delay: Duration(milliseconds: 50 * index),
+                  duration: 400.ms,
+                )
+                .slideY(
+                  begin: 0.1,
+                  end: 0,
+                  delay: Duration(milliseconds: 50 * index),
+                  duration: 400.ms,
+                );
+          }, childCount: filtered.length),
         ),
       );
     });
@@ -252,10 +268,7 @@ class _MangaCard extends StatelessWidget {
     final coverPath = coverService.coverPath(manga.id);
 
     return GestureDetector(
-      onTap: () => Get.toNamed(
-        AppRoutes.mangaDetail,
-        arguments: manga.id,
-      ),
+      onTap: () => Get.toNamed(AppRoutes.mangaDetail, arguments: manga.id),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -279,13 +292,11 @@ class _MangaCard extends StatelessWidget {
             Expanded(
               flex: 3,
               child: ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
                 child: hasCover
-                    ? Image.file(
-                        File(coverPath),
-                        fit: BoxFit.cover,
-                      )
+                    ? Image.file(File(coverPath), fit: BoxFit.cover)
                     : Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(

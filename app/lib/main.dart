@@ -12,33 +12,39 @@ import 'services/connectivity_service.dart';
 import 'services/cover_service.dart';
 import 'services/sync_service.dart';
 import 'services/user_service.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  }
 
   // Initialize local storage
   await GetStorage.init();
 
   // Set system UI style
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: Colors.black,
-    systemNavigationBarIconBrightness: Brightness.light,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.black,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
 
   // ── Initialize Global Services ─────────────────
   // These persist across the entire app lifecycle
 
   // Connectivity monitoring
-  final connectivityService = await Get.putAsync<ConnectivityService>(
-    () async {
-      final service = ConnectivityService();
-      service.onInit();
-      return service;
-    },
-    permanent: true,
-  );
+  final connectivityService = await Get.putAsync<ConnectivityService>(() async {
+    final service = ConnectivityService();
+    service.onInit();
+    return service;
+  }, permanent: true);
 
   // User alias
   final userService = Get.put(UserService(), permanent: true);
@@ -64,8 +70,9 @@ void main() async {
   );
 
   // Determine initial route
-  final initialRoute =
-      userService.hasAlias ? AppRoutes.home : AppRoutes.onboarding;
+  final initialRoute = userService.hasAlias
+      ? AppRoutes.home
+      : AppRoutes.onboarding;
 
   runApp(MangaLibApp(initialRoute: initialRoute));
 }
@@ -78,7 +85,7 @@ class MangaLibApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'MangaLib',
+      title: 'Mangas',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       initialRoute: initialRoute,
