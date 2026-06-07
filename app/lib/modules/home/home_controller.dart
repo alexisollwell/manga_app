@@ -73,4 +73,13 @@ class HomeController extends GetxController {
   void togglePendingFilter() {
     showOnlyPending.toggle();
   }
+
+  void updateMangaInList(MangaModel updatedManga) {
+    final index = mangas.indexWhere((m) => m.id == updatedManga.id);
+    if (index != -1) {
+      mangas[index] = updatedManga;
+    } else {
+      mangas.add(updatedManga);
+    }
+  }
 }

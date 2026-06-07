@@ -7,6 +7,7 @@ import '../../data/repositories/manga_repository.dart';
 import '../../routes/app_routes.dart';
 import '../../services/cover_service.dart';
 import '../../services/user_service.dart';
+import '../home/home_controller.dart';
 
 class MangaDetailController extends GetxController {
   final _repo = Get.find<MangaRepository>();
@@ -23,6 +24,13 @@ class MangaDetailController extends GetxController {
   void onInit() {
     super.onInit();
     loadManga();
+
+    // Automatically update HomeController when manga changes
+    ever(manga, (MangaModel? val) {
+      if (val != null && Get.isRegistered<HomeController>()) {
+        Get.find<HomeController>().updateMangaInList(val);
+      }
+    });
   }
 
   Future<void> loadManga() async {
@@ -127,10 +135,13 @@ class MangaDetailController extends GetxController {
     }
   }
 
-  void goToEdit() {
-    Get.toNamed(AppRoutes.mangaForm, arguments: {
+  Future<void> goToEdit() async {
+    final result = await Get.toNamed(AppRoutes.mangaForm, arguments: {
       'mangaId': mangaId,
       'mode': 'edit',
     });
+    if (result is MangaModel) {
+      manga.value = result;
+    }
   }
 }

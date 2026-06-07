@@ -23,25 +23,25 @@ class OnboardingView extends GetView<OnboardingController> {
                 children: [
                   // ── App Icon ─────────────────────────
                   Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withAlpha(100),
-                          blurRadius: 30,
-                          offset: const Offset(0, 10),
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          gradient: AppColors.primaryGradient,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withAlpha(100),
+                              blurRadius: 30,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.auto_stories_rounded,
-                      size: 48,
-                      color: Colors.white,
-                    ),
-                  )
+                        child: const Icon(
+                          Icons.auto_stories_rounded,
+                          size: 48,
+                          color: Colors.white,
+                        ),
+                      )
                       .animate()
                       .scale(
                         begin: const Offset(0.5, 0.5),
@@ -55,10 +55,13 @@ class OnboardingView extends GetView<OnboardingController> {
 
                   // ── Welcome Text ─────────────────────
                   Text(
-                    '¡Bienvenido a MangaLib!',
-                    style: Theme.of(context).textTheme.displayMedium,
-                    textAlign: TextAlign.center,
-                  ).animate().fadeIn(delay: 200.ms, duration: 500.ms).slideY(
+                        '¡Bienvenido!',
+                        style: Theme.of(context).textTheme.displayMedium,
+                        textAlign: TextAlign.center,
+                      )
+                      .animate()
+                      .fadeIn(delay: 200.ms, duration: 500.ms)
+                      .slideY(
                         begin: 0.3,
                         end: 0,
                         delay: 200.ms,
@@ -70,8 +73,8 @@ class OnboardingView extends GetView<OnboardingController> {
                   Text(
                     'Tu biblioteca de mangas compartida',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                      color: AppColors.textSecondary,
+                    ),
                     textAlign: TextAlign.center,
                   ).animate().fadeIn(delay: 400.ms, duration: 500.ms),
 
@@ -79,37 +82,40 @@ class OnboardingView extends GetView<OnboardingController> {
 
                   // ── Name Input ───────────────────────
                   TextFormField(
-                    controller: controller.nameController,
-                    validator: Validators.alias,
-                    textCapitalization: TextCapitalization.words,
-                    textInputAction: TextInputAction.done,
-                    onFieldSubmitted: (_) => controller.saveAlias(),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      color: AppColors.textPrimary,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: '¿Cómo te llamas?',
-                      hintText: 'Tu nombre o alias',
-                      prefixIcon: const Icon(
-                        Icons.person_outline_rounded,
-                        color: AppColors.primary,
-                      ),
-                      filled: true,
-                      fillColor: AppColors.surfaceLight,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(
-                          color: AppColors.primary,
-                          width: 2,
+                        controller: controller.nameController,
+                        validator: Validators.alias,
+                        textCapitalization: TextCapitalization.words,
+                        textInputAction: TextInputAction.done,
+                        onFieldSubmitted: (_) => controller.saveAlias(),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: AppColors.textPrimary,
                         ),
-                      ),
-                    ),
-                  ).animate().fadeIn(delay: 600.ms, duration: 500.ms).slideY(
+                        decoration: InputDecoration(
+                          labelText: '¿Cómo te llamas?',
+                          hintText: 'Tu nombre o alias',
+                          prefixIcon: const Icon(
+                            Icons.person_outline_rounded,
+                            color: AppColors.primary,
+                          ),
+                          filled: true,
+                          fillColor: AppColors.surfaceLight,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: AppColors.primary,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(delay: 600.ms, duration: 500.ms)
+                      .slideY(
                         begin: 0.3,
                         end: 0,
                         delay: 600.ms,
@@ -119,37 +125,39 @@ class OnboardingView extends GetView<OnboardingController> {
                   const SizedBox(height: 32),
 
                   // ── Continue Button ──────────────────
-                  Obx(() => SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: controller.isLoading.value
-                              ? null
-                              : controller.saveAlias,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                  Obx(
+                        () => SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : controller.saveAlias,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
                             ),
+                            child: controller.isLoading.value
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Comenzar',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                           ),
-                          child: controller.isLoading.value
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text(
-                                  'Comenzar',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
                         ),
-                      ))
+                      )
                       .animate()
                       .fadeIn(delay: 800.ms, duration: 500.ms)
                       .slideY(

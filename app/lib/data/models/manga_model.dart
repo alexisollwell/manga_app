@@ -2,6 +2,8 @@
 /// Supports JSON serialization (API) and SQLite map conversion (local cache).
 library;
 
+import 'package:flutter/foundation.dart';
+
 class MangaModel {
   final String id;
   final String titulo;
@@ -95,8 +97,17 @@ class MangaModel {
       identical(this, other) ||
       other is MangaModel &&
           runtimeType == other.runtimeType &&
-          id == other.id;
+          id == other.id &&
+          titulo == other.titulo &&
+          cantidadTomos == other.cantidadTomos &&
+          isTemporary == other.isTemporary &&
+          listEquals(tomosAdquiridos, other.tomosAdquiridos);
 
   @override
-  int get hashCode => id.hashCode;
+  int get hashCode =>
+      id.hashCode ^
+      titulo.hashCode ^
+      cantidadTomos.hashCode ^
+      isTemporary.hashCode ^
+      Object.hashAll(tomosAdquiridos);
 }

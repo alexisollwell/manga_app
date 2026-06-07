@@ -115,7 +115,7 @@ class MangaFormController extends GetxController {
         }
       }
 
-      Get.back(result: true);
+      Get.back(result: result);
       Get.snackbar(
         'Listo',
         isEditMode.value
